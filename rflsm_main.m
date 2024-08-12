@@ -53,7 +53,7 @@ xmax=param.xmax;
 minsnr = param.minsnr;
 mintrace = param.mintrace;
 %% load data
-load(fullfile(datadir,'decon_xf_0.02_3_gauss2.5_src.mat'));
+load(fullfile(datadir,'example_event.mat'));
 %% prepare velocity model for migration
 [vel,vel_s,x,z] = rflsm_create_initial_model(param);
 %% loop over all shots (events)
