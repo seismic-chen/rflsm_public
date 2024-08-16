@@ -120,12 +120,15 @@ for ishot=1:length(eventid)
     rayp = mean([sub.rayp]);
     baz = mean([sub.baz]);
     [src,pos,tshift] = rflsm_create_src(dt,nt,rayp,baz,vp,param);
-
+    
     % taper RF to remove later conversions
     wl=floor(((40-ittax(1))/dt+1));
     w = [tukeywin(wl,0.75); zeros(size(d,1)-wl,1)];
     win=w*ones(1,size(d,2));
     d=d.*win;
+
+    % scale the src
+    src = src *max(d(:));
 
     rayps = [sub.rayp];
     bazs = [sub.baz];
@@ -154,7 +157,7 @@ xlabel('Distance (km)');
 ylabel('Depth (km)');
 title('Migration image')
 set(gca,'fontsize',14)
-cmax=0.3;
+cmax=0.8;
 caxis([-cmax cmax]);
 colorbar
 text(-0.12,0.98,'a)','Units','normalized','FontSize',18)
