@@ -54,13 +54,19 @@ minsnr = param.minsnr;
 mintrace = param.mintrace;
 %% load data
 load(fullfile(datadir,'example_event.mat'));
+% datadir = '~/MATLAB/code_packages/radon_decon_codes/rfrt/';
+% gauss=2.5;
+% load(fullfile(datadir,['decon_xf_0.02_3_gauss',num2str(gauss),'_src.mat']));
+
 %% prepare velocity model for migration
 [vel,vel_s,x,z] = rflsm_create_initial_model(param);
+vel = repmat(mean(vel,2),1,nx);
+vel_s = repmat(mean(vel_s,2),1,nx);
 %% loop over all shots (events)
 eventid=unique({log.id});
 nshot=length(eventid);
 
-for ishot=1:length(eventid)
+for ishot=1:nshot
     disp(['Processing shot ', num2str(ishot)]);
     keep = strcmp({log.id},eventid{ishot});
     sub=log(keep);
@@ -87,6 +93,7 @@ for ishot=1:length(eventid)
     rx = deg0*2*pi*6371/360;
     param.rx = rx;
     %% Preprocessing with Radon transform (Zhang et al., 2022, GJI)
+    is_radon = 1;
     if is_radon
         ittax=sub(1).ittax;
         dt=ittax(2)-ittax(1);
@@ -100,6 +107,10 @@ for ishot=1:length(eventid)
         itr = [sub.itr];
     end
     %% Binning
+    ittax=sub(1).ittax;
+    dt=ittax(2)-ittax(1);
+    nt=length(ittax);
+    t=(0:nt-1)*dt;
     d = zeros(nt,nx);
     for i=1:nx
         idx=rx>=x(i)-dx/2 & rx<=x(i)+dx/2;
@@ -108,6 +119,7 @@ for ishot=1:length(eventid)
         end
     end
     %% Parameters for SSA/CAZDOW reconstruction
+    is_ssa = 0;
     if is_ssa
         i1=xpad/dx+1;
         i2=nx-xpad/dx-1;

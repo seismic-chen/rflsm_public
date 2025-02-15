@@ -48,7 +48,9 @@ if baz<=270 && baz>=90
     theta=-theta;
 end
 
-tmax=tand(theta)*len/mean(vp);
+% Feb. 14, 2025, sin lead to the right depth
+tmax=sind(theta)*len/mean(vp);
+
 if tmax<0
     tshift=linspace(abs(tmax),0,nx);
 else
